@@ -20,10 +20,12 @@ const routes = [
       return import(/* webpackChunkName: "about" */ '../views/About.vue')
     }
   }
-]
+];
 
 const router = new VueRouter({
-  routes
-})
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes,
+});
 
 export default router
