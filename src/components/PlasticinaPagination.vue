@@ -55,11 +55,13 @@ export default {
  },
  mounted(){
     this.currentPage = parseInt(this.$route.query[this.pageParameter], 10) || 1;
- },
+    this.$emit('send-message', this.currentPage);
+},
  watch: {
     $route(to) {
       console.log('esta es la query que observamos arriba',to);
       this.currentPage = parseInt(to.query[this.pageParameter], 10) || 1;
+      this.$emit('send-message', this.currentPage);
     },
  },
 

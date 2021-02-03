@@ -1,7 +1,7 @@
 <template>
 	<div class="plasticina-products">
-		<div class="card-container" v-for="web of webs" v-bind:key="web.id">
-			<a v-bind:href="web.url" target="_blank">
+		<div class="card-container" v-for="pokemon of pokemons" v-bind:key="pokemon.id">
+			<a v-bind:href="pokemon.url" target="_blank">
 				<!-- :href="web.url"-->
 				<!-- *ngFor="let enterprise of enterprises; index as i" -->
 				<div class="card">
@@ -9,20 +9,28 @@
 					<div class="image-card-container">
 						<img class="image-card" src="https://upload-icon.s3.amazonaws.com/uploads/icons/png/5772763941542186926-512.png">
           </div>
-						<h1 class="card-title">{{web.name}}</h1> <!-- {{enterprise.name}} -->
+						<h1 class="card-title">{{pokemon.name}}</h1> <!-- {{enterprise.name}} -->
 						<h1 class="card-subtitle"></h1> <!-- {{enterprise.direccion}} -->
 					</div>
 			</a>
 		</div>
 
+			<!--
+		    <textarea
+				ref="console"
+				style="font-family: inerhit; min-width: 320px; max-width: 640px; width: 100%"
+			/>
+			-->
+
         <div class="paginator-container">
-            <PlasticinaPagination :total-pages="12" />
+            <PlasticinaPagination :total-pages="12" @send-message="handleSendMessage" />
         </div>
 	</div>
 </template>
 
 <script>
-    import PlasticinaPagination from '@/components/PlasticinaPagination.vue'
+    import PlasticinaPagination from '@/components/PlasticinaPagination.vue';
+	import axios from 'axios';
 
     export default {
         name: 'PlasticinaProducts',
@@ -31,12 +39,51 @@
         },
         data: function (){
             return {
-            webs: [ {id:1,name:'Majus',url:'https://vase.cl/majus/'},
-                    {id:2,name:'Cometazul',url:'http://cometazul.com/'},
-                    {id:3,name:'Jazmín',url:'https://vase.cl/jazmin/'},
-                    {id:4,name:'Fisalis',url:'https://vase.cl/fisalis/'}],
+			pokemons: [],
+			limit: 10,
+			offset: 10,
+			page: 1
             };
-        },
+		},
+		methods:{
+			chargeData:function(limit,offset){
+				axios.get('https://pokeapi.co/api/v2/pokemon?limit='+limit+'&offset='+offset)
+					.then(response => {
+						this.pokemons = response.data.results;
+						console.log('response',response)
+					})
+					.catch(e => {
+						this.errors.push(e)
+					})
+			},
+			handleSendMessage(value) {+ 
+				// Our event handler gets the event, as well as any
+				// arguments the child passes to the event
+				this.chargeData(this.limit,this.offset * value);
+			}
+		},
+		/*
+		mounted(){
+			this.page = parseInt(this.$route.query[this.pageParameter], 10) || 1;
+			console.log('que pasa',this.page);
+			
+		},
+		 watch: {
+			$route(to) {
+				this.page = parseInt(to.query[this.pageParameter], 10) || 1;
+				console.log('-----page',this.page);
+				this.chargeData(this.limit,this.offset * this.page);
+			},
+		},*/
+		/*
+		created(){
+			//inicial charge
+			if(this.page==1){
+				this.chargeData(this.limit,this.offset * this.page);
+			}
+		},
+		*/
+		
     }
 </script>
 
@@ -107,6 +154,11 @@
 
 	a {
 		text-decoration: none;
+	}
+
+	.paginator-container{
+		padding-top: 10%;
+		padding-bottom: 10%;
 	}
 
 	@media (max-width:900px) {
