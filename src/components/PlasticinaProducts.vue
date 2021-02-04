@@ -23,19 +23,20 @@
 			-->
 
         <div class="paginator-container">
-            <PlasticinaPagination :total-pages="12" @send-message="handleSendMessage" />
+            <SamuraiCategoryPagination :total-pages="1000" @send-message="handleSendMessage" />
         </div>
 	</div>
 </template>
 
 <script>
-    import PlasticinaPagination from '@/components/PlasticinaPagination.vue';
+	import PlasticinaPagination from '@/components/PlasticinaPagination.vue';
+	import SamuraiCategoryPagination from '@/components/SamuraiCategoryPagination.vue';
 	import axios from 'axios';
 
     export default {
         name: 'PlasticinaProducts',
         components: {
-            PlasticinaPagination,
+            SamuraiCategoryPagination,
         },
         data: function (){
             return {
@@ -159,9 +160,11 @@
 	.paginator-container{
 		padding-top: 10%;
 		padding-bottom: 10%;
+		width: 70%;
+		margin-left: 15%;
 	}
 
-	@media (max-width:900px) {
+	@media (max-width:1000px) {
 		.card-container {
 			margin-top: 15%;
 			display: block;
@@ -171,6 +174,13 @@
 			width: 80%;
 			margin-left: 10%;
 			height: 310px;
+		}
+
+		.paginator-container{
+			padding-top: 10%;
+			padding-bottom: 10%;
+			width: 100%;
+			margin-left: 0%;
 		}
 	}    
 </style>
