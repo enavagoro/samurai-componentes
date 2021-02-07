@@ -1,56 +1,59 @@
 <template>
-    <div class="samurai-category-pagination-container">
-        <div class="left-part">
-            <router-link class="link" v-if="currentPage > firstValue" :to="previousPage(currentPage)"><h1 class="text-paginator-previous">Anterior</h1></router-link>
-        </div>
-        <div class="center-part">
-            <div class="square-container">
-                <router-link class="link" :to="selectPage(firstValue)">
-                <div class="square" v-if="firstValue!=currentPage">
-                    <h1 class="square-number">{{firstValue}}</h1>
-                </div>
-                <div class="square-selected" v-if="firstValue==currentPage">
-                    <h1 class="square-number">{{firstValue}}</h1>
-                </div>
-                </router-link>
+    <div class="samurai-category-pagination-container" :style="styles">
+        <div class="samurai-category-pagination">
+            <div class="left-part desktop">
+                <router-link class="link" v-if="currentPage > firstValue" :to="previousPage(currentPage)"><h1 class="text-paginator-previous">Anterior</h1></router-link>
             </div>
-            <div class="square-container" v-for="(page ,index) of filterPages()" v-bind:key="index">
-                <router-link class="link" :to="selectPage(page)">
-                <div class="square" v-if="page!=currentPage">
-                    <h1 class="square-number">{{page}}</h1>
+            <div class="center-part">
+                <div class="square-container">
+                    <router-link class="link" :to="selectPage(firstValue)">
+                    <div class="square" v-if="firstValue!=currentPage">
+                        <h1 class="square-number">{{firstValue}}</h1>
+                    </div>
+                    <div class="square-selected" v-if="firstValue==currentPage">
+                        <h1 class="square-number">{{firstValue}}</h1>
+                    </div>
+                    </router-link>
                 </div>
-                <div class="square-selected" v-if="page==currentPage">
-                    <h1 class="square-number">{{page}}</h1>
+                <div class="square-container" v-for="(page ,index) of filterPages()" v-bind:key="index">
+                    <router-link class="link" :to="selectPage(page)">
+                    <div class="square" v-if="page!=currentPage">
+                        <h1 class="square-number">{{page}}</h1>
+                    </div>
+                    <div class="square-selected" v-if="page==currentPage">
+                        <h1 class="square-number">{{page}}</h1>
+                    </div>
+                    </router-link>
                 </div>
-                </router-link>
+                <div class="square-container">
+                    <router-link class="link" :to="selectPage(lastValue)">
+                    <div class="square" v-if="lastValue!=currentPage">
+                        <h1 class="square-number">{{lastValue}}</h1>
+                    </div>
+                    <div class="square-selected" v-if="lastValue==currentPage">
+                        <h1 class="square-number">{{lastValue}}</h1>
+                    </div>
+                    </router-link>
+                </div>
             </div>
-            <div class="square-container">
-                <router-link class="link" :to="selectPage(lastValue)">
-                <div class="square" v-if="lastValue!=currentPage">
-                    <h1 class="square-number">{{lastValue}}</h1>
+            <div class="right-part desktop">
+                <router-link class="link" v-if="currentPage < lastValue" :to="nextPage(currentPage)"><h1 class="text-paginator-last">Siguiente</h1></router-link>
+            </div>
+            <div class="links-phone phone">
+                <div class="left-part">
+                    <router-link class="link" v-if="currentPage > firstValue" :to="previousPage(currentPage)"><h1 class="text-paginator-previous">Anterior</h1></router-link>
                 </div>
-                <div class="square-selected" v-if="lastValue==currentPage">
-                    <h1 class="square-number">{{lastValue}}</h1>
+                <div class="right-part">
+                    <router-link class="link" v-if="currentPage < lastValue" :to="nextPage(currentPage)"><h1 class="text-paginator-last">Siguiente</h1></router-link>
                 </div>
-                </router-link>
             </div>
         </div>
-        <div class="right-part">
-            <router-link class="link" v-if="currentPage < lastValue" :to="nextPage(currentPage)"><h1 class="text-paginator-last">Siguiente</h1></router-link>
-        </div>
-        <!--
-        
-        <div class="square-container">
-            <router-link class="square-link">1</router-link>
-        </div>
-        
-        -->
     </div>
 </template>
 
 <script>
 export default {
-  name: 'SamuraiCategoryPagination',
+  name: 'SamuraiCategoryPaginationT1',
   data() {
     return {
       currentPage: 0,
@@ -68,6 +71,26 @@ export default {
       type: String,
       default: 'page',
     },
+    primaryColor: {
+        type: String,
+        default: '#333333'
+    },
+    secondaryColor: {
+        type: String,
+        default: '#e9ecef'
+    },
+    textColor: {
+        type: String,
+        default: '#333333',
+    },
+    textColorSelected: {
+        type: String,
+        default: 'white',
+    },
+    circleButton: {
+        type: Boolean,
+        default: false,
+    }
  },
  methods:{
     nextPage(currentPage){
@@ -97,6 +120,7 @@ export default {
             return {
                 query: {
                 ...this.$route.query,
+                
                 [this.pageParameter]: currentPage - 1,
                 },
             };
@@ -140,22 +164,34 @@ export default {
     this.lastValue = this.totalPages;
     this.currentPage = parseInt(this.$route.query[this.pageParameter], 10) || 1;
     if(this.currentPage >= this.firstValue && this.currentPage <= this.lastValue ){
-        this.$emit('send-message', this.currentPage);
+        this.$emit('send-current-page', this.currentPage);
     }
-    
 },
  watch: {
     $route(to) {
       this.currentPage = parseInt(to.query[this.pageParameter], 10) || 1;
       if(this.currentPage >= this.firstValue && this.currentPage <= this.lastValue ){
-        this.$emit('send-message', this.currentPage);
+        this.$emit('send-current-page', this.currentPage);
       }
     },
  },
+ computed: {
+     styles(){
+         var borderRadius = this.circleButton ? '200px' : '5px' ;
+
+         return {
+            '--primary-color': this.primaryColor,
+            '--secondary-color': this.secondaryColor,
+            '--text-color': this.textColor,
+            '--text-color-selected': this.textColorSelected,
+            '--button-border-radius': borderRadius,
+         }
+     }
+ }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
     @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;1,100;1,200;1,300&display=swap');
 
@@ -167,10 +203,18 @@ export default {
         height: 100px;
     }
 
+    /* contenedor de las partes y el que centra */
+
+    .samurai-category-pagination{
+        width:50%;
+        display: flex;
+        margin: 0 auto;
+    }
+
     /* Parte Izquierda (El botón que dice anterior) */
 
     .left-part{
-        width: 100%;
+        width:10%;
     }
 
     .text-paginator-previous{
@@ -178,19 +222,25 @@ export default {
         font-family: Poppins;
         font-size: 14px;
         padding-top: 8px;
+        padding-bottom:8px;
+        margin: 0 auto;
         font-weight: 500;
     }
 
     /* Los numeros de la Páginación */
 
     .center-part{
+        margin-left: 10%;
+        margin-right: 10%;
         width: 100%;
+        text-align: center;
+        //margin-right: 5%;
     }
 
     .square-container{
         padding: 0;
         margin-left: 5px;
-        margin-top: 13px;
+        margin-top: 0px;
         min-width: 34px;
         min-height: 34px;
         display: inline-flex;
@@ -204,25 +254,30 @@ export default {
     .square{
         min-width: 34px;
         min-height: 34px;
-        border-radius: 5px;
+        border-radius: var(--button-border-radius);
         background:transparent;
-        color: black;
+        border: solid 1px transparent;
+        color: var(--text-color);
     }
 
     .square:hover{
-        background: #e9ecef;       
+        background: var(--secondary-color);       
+        border: solid 1px var(--secondary-color);
     }
 
     .square-selected{
         min-width: 34px;
         min-height: 34px;
-        border-radius: 5px;
-        background: black;
-        color: white;
+        border-radius: var(--button-border-radius);
+        background-color: var(--primary-color);
+        color: var(--text-color-selected);
+        border: solid 1px var(--primary-color);
     }
 
     .square-number{
-        padding: 20%;
+        padding-top: 8px;
+        padding-left: 5px;
+        padding-right: 5px;
         margin: 0%;
         font-family: Poppins;
         font-size: 14px;
@@ -232,30 +287,78 @@ export default {
     /* Parte Derecha (El botón que dice siguiente) */
 
     .right-part{
-        width: 100%;
+        width: 10%;
     }
 
-    .text-paginator-last{
-        text-align: left;
+    .text-paginator-last{        
         font-family: Poppins;
         font-size: 14px;
         padding-top: 8px;
         font-weight: 500;
+        text-align: left;
     }
 
-    @media (max-width:1000px){
-        .left-part{
-            width: 15%;
-            margin-right: 0%;
-            margin-left: 0%;
+    .phone{
+        display: none;
+    }
+
+    @media (max-width:800px){
+        .desktop{
+            display: none;
         }
+
+        .phone{
+            display: block;
+        }
+
+        .links-phone{
+            margin-top: 10%;
+            display:flex;
+        }
+
+        .samurai-category-pagination{
+            width: 100%;
+            display:block;
+        }
+
         .center-part{
-            width: 70%;
-        }   
-        .right-part{
-            width: 15%;
+            width: 100%;
+            margin-right: 0% !important;
+            margin-left: 0%;
+            margin: 0 auto;
+        }
+
+        .left-part{
+            width: 100%;
             margin-right: 0%;
             margin-left: 0%;
         }
+
+        .text-paginator-previous{
+            text-align: left;
+            font-family: Poppins;
+            font-size: 14px;
+            padding-top: 8px;
+            padding-bottom:8px;
+            margin: 0 auto;
+            font-weight: 500;
+            width: 100%;
+        }        
+
+        .right-part{
+            width: 100%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .text-paginator-last{
+            text-align: right;        
+            font-family: Poppins;
+            font-size: 14px;
+            padding-top: 8px;
+            font-weight: 500;
+            width: 100%;
+        }
+        
     }
 </style>

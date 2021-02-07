@@ -1,7 +1,7 @@
 <template>
 	<div class="plasticina-products">
-		<div class="card-container" v-for="pokemon of pokemons" v-bind:key="pokemon.id">
-			<a v-bind:href="pokemon.url" target="_blank">
+		<div class="card-container" v-for=" c of content" v-bind:key="c.id">
+			<a v-bind:href="c.url" target="_blank">
 				<!-- :href="web.url"-->
 				<!-- *ngFor="let enterprise of enterprises; index as i" -->
 				<div class="card">
@@ -9,7 +9,7 @@
 					<div class="image-card-container">
 						<img class="image-card" src="https://upload-icon.s3.amazonaws.com/uploads/icons/png/5772763941542186926-512.png">
           </div>
-						<h1 class="card-title">{{pokemon.name}}</h1> <!-- {{enterprise.name}} -->
+						<h1 class="card-title">{{c.nombreProducto}}</h1> <!-- {{enterprise.name}} -->
 						<h1 class="card-subtitle"></h1> <!-- {{enterprise.direccion}} -->
 					</div>
 			</a>
@@ -21,9 +21,13 @@
 				style="font-family: inerhit; min-width: 320px; max-width: 640px; width: 100%"
 			/>
 			-->
+<!-- https://corellana.samurai.cl/getProductsAllPagination?idSeller=&page=1&paginationFilter=10&rol=SUPERADMIN&search=&trashed=0
+-->
 
+<!-- https://www.motomostorechile.cl/getProductosCategoria/audio
+-->
         <div class="paginator-container">
-            <SamuraiCategoryPagination :total-pages="1000" @send-message="handleSendMessage" />
+            <SamuraiCategoryPagination :totalPages="100000" circleButton=true @send-current-page="receiveCurrentPage"/>
         </div>
 	</div>
 </template>
@@ -40,27 +44,35 @@
         },
         data: function (){
             return {
-			pokemons: [],
+			content: [],
 			limit: 10,
 			offset: 10,
 			page: 1
             };
 		},
 		methods:{
-			chargeData:function(limit,offset){
-				axios.get('https://pokeapi.co/api/v2/pokemon?limit='+limit+'&offset='+offset)
+			chargeData:function(limit,page){
+				axios.get('https://corellana.samurai.cl/getProductsAllPagination?idSeller=&page='+page+'&paginationFilter='+limit+'&rol=SUPERADMIN&search=&trashed=0')
 					.then(response => {
-						this.pokemons = response.data.results;
+						this.content = response.data.data;
 						console.log('response',response)
 					})
 					.catch(e => {
 						this.errors.push(e)
 					})
+/*
+				axios.get('https://pokeapi.co/api/v2/c?limit='+limit+'&offset='+offset)
+					.then(response => {
+						this.content = response.data.results;
+						console.log('response',response)
+					})
+					.catch(e => {
+						this.errors.push(e)
+					})*/
 			},
-			handleSendMessage(value) {+ 
-				// Our event handler gets the event, as well as any
-				// arguments the child passes to the event
-				this.chargeData(this.limit,this.offset * value);
+			receiveCurrentPage(currentPage) {
+				this.page = currentPage;
+				this.chargeData(this.limit,this.page);
 			}
 		},
 		/*
@@ -90,8 +102,8 @@
 
 <style scoped>
     .plasticina-products{
-        width: 95%;
-		margin-left: 2.5%;
+        width: 100%;
+		margin-left: 0%;
     }
 
     .card-container {
